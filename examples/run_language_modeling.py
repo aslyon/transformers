@@ -60,6 +60,7 @@ from transformers import (
     RobertaConfig,
     RobertaForMaskedLM,
     RobertaTokenizer,
+    AATokenizer,
     get_linear_schedule_with_warmup,
 )
 
@@ -78,6 +79,7 @@ MODEL_CLASSES = {
     "openai-gpt": (OpenAIGPTConfig, OpenAIGPTLMHeadModel, OpenAIGPTTokenizer),
     "bert": (BertConfig, BertForMaskedLM, BertTokenizer),
     "roberta": (RobertaConfig, RobertaForMaskedLM, RobertaTokenizer),
+    "robertAA": (RobertaConfig, RobertaForMaskedLM, AATokenizer),
     "distilbert": (DistilBertConfig, DistilBertForMaskedLM, DistilBertTokenizer),
     "camembert": (CamembertConfig, CamembertForMaskedLM, CamembertTokenizer),
 }

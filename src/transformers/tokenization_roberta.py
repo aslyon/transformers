@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Tokenization classes for RoBERTa."""
-
-
+import json
 import logging
+import os
 
 from tokenizers.processors import RobertaProcessing
 from .tokenization_utils import PreTrainedTokenizer
@@ -337,7 +337,9 @@ class AATokenizer(PreTrainedTokenizer):
                     'start': 26,
                     '<unk>': 3,
                     '<s>': 0,
-                    '</s>': 2}
+                    '</s>': 2,
+                    '<pad>': 1,
+                    '<mask>': 27}
         return aa_to_id[token]
 
     def _convert_id_to_token(self, index):
@@ -366,7 +368,9 @@ class AATokenizer(PreTrainedTokenizer):
                     26: 'start',
                     3: '<unk>',
                     0: '<s>',
-                    2: '</s>'}
+                    2: '</s>',
+                    1: '<pad>',
+                    27: '<mask>'}
         return id_to_aa[index]
 
     def convert_tokens_to_string(self, tokens):
@@ -374,7 +378,17 @@ class AATokenizer(PreTrainedTokenizer):
         return "".join(self.convert_ids_to_tokens(tokens))
 
     def save_vocabulary(self, save_directory):
-        voc = '\n'.join(['start'] + [res for res in self.valid_aas])
-        with open(save_directory, 'w') as oh:
-            oh.write(voc)
+        """Save the tokenizer vocabulary and merge files to a directory."""
+        if not os.path.isdir(save_directory):
+            logger.error("Vocabulary path ({}) should be a directory".format(save_directory))
+            return
+        vocab_file = os.path.join(save_directory, VOCAB_FILES_NAMES["vocab_file"])
 
+        with open(vocab_file, "w", encoding="utf-8") as f:
+            f.write(json.dumps(self.encoder, ensure_ascii=False))
+
+        return vocab_file
+
+    def from_pretrained(cls, *inputs, **kwargs):
+        """Overriding base method. There is no need to read any files since the amino acid vocab is so short"""
+        pass
